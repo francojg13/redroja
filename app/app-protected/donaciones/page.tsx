@@ -77,7 +77,12 @@ if (!usuario) {
 }
 
 setUsuarioRol(usuario.rol)
-setPerfilMedico(usuario.perfil_medico)
+
+const perfil = Array.isArray(usuario.perfil_medico) 
+  ? usuario.perfil_medico[0] 
+  : usuario.perfil_medico
+
+setPerfilMedico(perfil)
 
 // Si es receptor, no cargar donaciones
 if (usuario.rol === 'receptor') {
