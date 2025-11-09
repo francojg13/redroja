@@ -63,12 +63,19 @@ export default function NuevaDonacionPage() {
         .eq('auth_id', user.id)
         .single()
 
-      if (usuario) {
-        setUsuarioId(usuario.id)
-        setTipoSangre(usuario.perfil_medico.tipo_sangre)
-        setUltimaDonacion(usuario.perfil_medico.ultima_donacion)
-        setEsPrimeraVez(usuario.perfil_medico.total_donaciones === 0)
-      }
+     if (usuario) {
+  setUsuarioId(usuario.id)
+  
+  const perfil = Array.isArray(usuario.perfil_medico) 
+    ? usuario.perfil_medico[0] 
+    : usuario.perfil_medico
+  
+  if (perfil) {
+    setTipoSangre(perfil.tipo_sangre)
+    setUltimaDonacion(perfil.ultima_donacion)
+    setEsPrimeraVez(perfil.total_donaciones === 0)
+  }
+}
 
       // Obtener bancos de sangre
       const { data: bancos, error: bancosError } = await supabase
