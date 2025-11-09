@@ -158,22 +158,28 @@ const donantesMapeados = (donantesData || [])
 
       if (solicitudesError) throw solicitudesError
 
-      const solicitudesMapeadas = (solicitudesData || [])
-        .filter(s => s.usuario?.latitud && s.usuario?.longitud)
-        .map(s => ({
-          id: s.id,
-          tipo_sangre_requerido: s.tipo_sangre_requerido,
-          unidades_requeridas: s.unidades_requeridas,
-          prioridad: s.prioridad,
-          hospital: s.hospital,
-          usuario: {
-            nombre: s.usuario.nombre,
-            apellido: s.usuario.apellido,
-            ciudad: s.usuario.ciudad,
-            latitud: s.usuario.latitud,
-            longitud: s.usuario.longitud
-          }
-        }))
+const solicitudesMapeadas = (solicitudesData || [])
+  .filter(s => {
+    const usuario = Array.isArray(s.usuario) ? s.usuario[0] : s.usuario
+    return usuario?.latitud && usuario?.longitud
+  })
+  .map(s => {
+    const usuario = Array.isArray(s.usuario) ? s.usuario[0] : s.usuario
+    return {
+      id: s.id,
+      tipo_sangre_requerido: s.tipo_sangre_requerido,
+      unidades_requeridas: s.unidades_requeridas,
+      prioridad: s.prioridad,
+      hospital: s.hospital,
+      usuario: {
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        ciudad: usuario.ciudad,
+        latitud: usuario.latitud,
+        longitud: usuario.longitud
+      }
+    }
+  })
 
       setSolicitudes(solicitudesMapeadas)
 
