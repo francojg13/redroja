@@ -115,18 +115,24 @@ export default function MapaPage() {
 
       if (donantesError) throw donantesError
 
-      const donantesMapeados = (donantesData || [])
-        .filter(d => d.perfil_medico?.apto_medico)
-        .map(d => ({
-          id: d.id,
-          nombre: d.nombre,
-          apellido: d.apellido,
-          ciudad: d.ciudad,
-          latitud: d.latitud!,
-          longitud: d.longitud!,
-          tipo_sangre: d.perfil_medico.tipo_sangre,
-          total_donaciones: d.perfil_medico.total_donaciones
-        }))
+const donantesMapeados = (donantesData || [])
+  .filter(d => {
+    const perfil = Array.isArray(d.perfil_medico) ? d.perfil_medico[0] : d.perfil_medico
+    return perfil?.apto_medico
+  })
+  .map(d => {
+    const perfil = Array.isArray(d.perfil_medico) ? d.perfil_medico[0] : d.perfil_medico
+    return {
+      id: d.id,
+      nombre: d.nombre,
+      apellido: d.apellido,
+      ciudad: d.ciudad,
+      latitud: d.latitud!,
+      longitud: d.longitud!,
+      tipo_sangre: perfil.tipo_sangre,
+      total_donaciones: perfil.total_donaciones
+    }
+  })
 
       setDonantes(donantesMapeados)
 
