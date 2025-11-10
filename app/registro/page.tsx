@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Droplet, AlertCircle, Loader2 } from 'lucide-react'
 import { TIPOS_SANGRE, PROVINCIAS_TUCUMAN } from '@/lib/constants'
 import { calcularEdad } from '@/lib/utils'
+import { enviarEmailBienvenida } from '@/lib/emails'
 
 export default function RegistroPage() {
   const router = useRouter()
