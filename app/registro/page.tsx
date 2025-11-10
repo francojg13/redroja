@@ -123,6 +123,14 @@ export default function RegistroPage() {
       console.log('4. Usuario creado en BD:', userData.id)
       console.log('5. Insertando perfil médico...')
 
+      console.log('6. Perfil médico creado exitosamente')
+
+        // NUEVO: Enviar email de bienvenida
+      console.log('7. Enviando email de bienvenida...')
+      await enviarEmailBienvenida(email, nombre, apellido)
+        .catch(err => console.error('Error enviando email:', err))
+      console.log('8. Redirigiendo al dashboard...')
+
       // 3. Crear perfil médico
       const factorRh = tipoSangre.includes('+') ? 'positivo' : 'negativo'
       

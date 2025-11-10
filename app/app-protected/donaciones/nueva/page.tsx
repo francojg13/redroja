@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, AlertCircle, Loader2, Heart, CheckCircle } from 'lucide-react'
 import { puedeDonar, diasHastaPoderDonar } from '@/lib/utils'
 import Link from 'next/link'
+import { formatDate } from '@/lib/utils'
+import { enviarEmailConfirmacionDonacion } from '@/lib/emails'
 
 interface BancoSangre {
   id: string
@@ -136,6 +138,43 @@ export default function NuevaDonacionPage() {
         .single()
 
       if (insertError) throw insertError
+
+try {
+  const bancoSeleccionado = bancosSangre.find(b => b.id === bancoId)
+  
+  if (bancoSeleccionado) {
+    console.log('Enviando email de confirmación de donación...')
+    
+    // Obtener datos del usuario actual
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user) {
+      const { data: usuarioData } = await supabase
+        .from('usuario')
+        .select('email, nombre, apellido')
+        .eq('auth_id', user.id)
+        .single()
+      
+      if (usuarioData) {
+        await enviarEmailConfirmacionDonacion(
+          usuarioData.email,
+          usuarioData.nombre,
+          {
+            fecha: formatDate(fechaDonacion),
+            banco: bancoSeleccionado.nombre,
+            direccion: bancoSeleccionado.direccion,
+            tipo_sangre: tipoSangre
+          }
+        )
+        
+        console.log('Email de confirmación enviado correctamente')
+      }
+    }
+  }
+} catch (emailError) {
+  console.error('Error enviando email (no crítico):', emailError)
+  // No lanzar error para que la donación se cree igual
+}
 
       // Redirigir
       router.push('/app-protected/donaciones')

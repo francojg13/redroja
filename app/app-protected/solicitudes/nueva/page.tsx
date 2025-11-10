@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, AlertCircle, Loader2, Droplet } from 'lucide-react'
 import { TIPOS_SANGRE } from '@/lib/constants'
 import Link from 'next/link'
+import { enviarEmailSolicitudUrgente } from '@/lib/emails'
 
 export default function NuevaSolicitudPage() {
   const router = useRouter()
@@ -96,6 +97,49 @@ export default function NuevaSolicitudPage() {
         .single()
 
       if (insertError) throw insertError
+
+if (insertError) throw insertError
+
+// NUEVO: Si es urgente, notificar a donantes compatibles
+if (prioridad === 'urgente') {
+  console.log('Solicitud urgente - Buscando donantes compatibles...')
+  
+  try {
+    // Obtener donantes compatibles
+    const { data: donantes } = await supabase
+      .from('usuario')
+      .select('email, perfil_medico!inner(tipo_sangre, apto_medico)')
+      .eq('activo', true)
+      .in('rol', ['donante', 'ambos'])
+      .eq('perfil_medico.apto_medico', true)
+      .limit(10) // Limitar a 10 para no saturar
+    
+    // Filtrar por tipo de sangre compatible
+    const donantesCompatibles = donantes?.filter(d => {
+      const perfil = Array.isArray(d.perfil_medico) ? d.perfil_medico[0] : d.perfil_medico
+      return perfil?.tipo_sangre === tipoSangre
+    }) || []
+    
+    if (donantesCompatibles.length > 0) {
+      const emails = donantesCompatibles.map(d => d.email)
+      console.log(`Enviando emails a ${emails.length} donantes...`)
+      
+      await enviarEmailSolicitudUrgente({
+        tipo_sangre: tipoSangre,
+        unidades: parseInt(unidades),
+        hospital: hospital || 'Hospital no especificado',
+        ciudad: ciudad || 'Tucumán'
+      }, emails)
+      
+      console.log('Emails enviados correctamente')
+    } else {
+      console.log('No se encontraron donantes compatibles')
+    }
+  } catch (emailError) {
+    console.error('Error enviando emails (no crítico):', emailError)
+    // No lanzar error para que la solicitud se cree igual
+  }
+}
 
       // Redirigir a solicitudes
       router.push('/app-protected/solicitudes')
