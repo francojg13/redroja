@@ -100,11 +100,23 @@ export default function NuevaSolicitudPage() {
 
 if (insertError) throw insertError
 
+
+if (insertError) throw insertError
+
 // NUEVO: Si es urgente, notificar a donantes compatibles
 if (prioridad === 'urgente') {
   console.log('Solicitud urgente - Buscando donantes compatibles...')
   
   try {
+    // Obtener datos del usuario actual (ciudad)
+    const { data: usuarioActual } = await supabase
+      .from('usuario')
+      .select('ciudad')
+      .eq('id', usuarioId)
+      .single()
+
+    const ciudadSolicitud = usuarioActual?.ciudad || 'San Miguel de Tucumán'
+    
     // Obtener donantes compatibles
     const { data: donantes } = await supabase
       .from('usuario')
@@ -112,7 +124,7 @@ if (prioridad === 'urgente') {
       .eq('activo', true)
       .in('rol', ['donante', 'ambos'])
       .eq('perfil_medico.apto_medico', true)
-      .limit(10) // Limitar a 10 para no saturar
+      .limit(10)
     
     // Filtrar por tipo de sangre compatible
     const donantesCompatibles = donantes?.filter(d => {
@@ -128,7 +140,7 @@ if (prioridad === 'urgente') {
         tipo_sangre: tipoSangre,
         unidades: parseInt(unidades),
         hospital: hospital || 'Hospital no especificado',
-        ciudad: ciudad || 'Tucumán'
+        ciudad: ciudadSolicitud
       }, emails)
       
       console.log('Emails enviados correctamente')
@@ -137,10 +149,8 @@ if (prioridad === 'urgente') {
     }
   } catch (emailError) {
     console.error('Error enviando emails (no crítico):', emailError)
-    // No lanzar error para que la solicitud se cree igual
   }
 }
-
       // Redirigir a solicitudes
       router.push('/app-protected/solicitudes')
       router.refresh()
