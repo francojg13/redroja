@@ -147,18 +147,30 @@ export default function RegistroPage() {
         })
 
       if (perfilError) {
-        console.error('Error al crear perfil médico:', perfilError)
-        setError(`Error al crear perfil médico: ${perfilError.message}. El usuario fue creado pero sin perfil médico.`)
-        setLoading(false)
-        return
-      }
+  console.error('Error al crear perfil médico:', perfilError)
+  setError(`Error al crear perfil médico: ${perfilError.message}`)
+  setLoading(false)
+  return
+}
 
-      console.log('6. Perfil médico creado exitosamente')
-      console.log('7. Redirigiendo al dashboard...')
+console.log('6. Perfil médico creado exitosamente')
 
-      // 4. Redirigir al dashboard
-      router.push('/app-protected/dashboard')
-      router.refresh()
+// Enviar email de bienvenida (sin await para no bloquear)
+enviarEmailBienvenida(email, nombre, apellido)
+  .then(result => {
+    if (result.success) {
+      console.log('Email de bienvenida enviado correctamente')
+    } else {
+      console.log('No se pudo enviar el email:', result.message)
+    }
+  })
+  .catch(err => {
+    console.error('Error enviando email:', err)
+  })
+
+console.log('7. Redirigiendo al dashboard...')
+router.push('/app-protected/dashboard')
+router.refresh()
 
     } catch (err: any) {
       console.error('Error general en registro:', err)

@@ -4,9 +4,6 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-/**
- * Server Action: Email de bienvenida al registrarse
- */
 export async function enviarEmailBienvenida(
   email: string,
   nombre: string,
@@ -14,9 +11,11 @@ export async function enviarEmailBienvenida(
 ) {
   try {
     // Solo enviar a email registrado en Resend durante desarrollo
-    const emailDestino = email === 'francojg13@outlook.com' ? email : 'francojg13@outlook.com'
+    const emailDestino = 'francojg13@outlook.com'
     
-    const { data, error } = await resend.emails.send({
+    console.log(`Intentando enviar email de bienvenida a ${emailDestino} (usuario: ${email})`)
+    
+    const result = await resend.emails.send({
       from: 'Red Roja <onboarding@resend.dev>',
       to: emailDestino,
       subject: '¡Bienvenido a Red Roja! 🩸',
@@ -24,7 +23,7 @@ export async function enviarEmailBienvenida(
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #dc2626;">¡Bienvenido a Red Roja, ${nombre}!</h1>
           
-          ${email !== emailDestino ? `<p style="color: #666; font-size: 12px;"><em>Nota: Este email está siendo enviado a ${emailDestino} porque Resend requiere verificación de dominio para enviar a otros destinatarios.</em></p>` : ''}
+          ${email !== emailDestino ? `<p style="color: #666; font-size: 12px;"><em>Nota: Este email se envía a ${emailDestino} porque Resend requiere verificación de dominio.</em></p>` : ''}
           
           <p>Hola ${nombre} ${apellido},</p>
           
@@ -52,16 +51,13 @@ export async function enviarEmailBienvenida(
       `
     })
 
-    if (error) {
-      console.error('Error enviando email de bienvenida:', error)
-      return { success: false, error: error.message }
-    }
-
-    console.log('Email de bienvenida enviado:', data)
-    return { success: true, data }
-  } catch (error: any) {
-    console.error('Error enviando email:', error)
-    return { success: false, error: error.message }
+    console.log('Email enviado exitosamente:', result)
+    return { success: true }
+    
+  } catch (error) {
+    console.error('Error en enviarEmailBienvenida:', error)
+    // No retornar el objeto error completo, solo el mensaje
+    return { success: false, message: 'Error al enviar email' }
   }
 }
 
