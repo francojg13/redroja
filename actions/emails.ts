@@ -13,13 +13,18 @@ export async function enviarEmailBienvenida(
   apellido: string
 ) {
   try {
+    // Solo enviar a email registrado en Resend durante desarrollo
+    const emailDestino = email === 'francojg13@outlook.com' ? email : 'francojg13@outlook.com'
+    
     const { data, error } = await resend.emails.send({
       from: 'Red Roja <onboarding@resend.dev>',
-      to: email,
+      to: emailDestino,
       subject: '¡Bienvenido a Red Roja! 🩸',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #dc2626;">¡Bienvenido a Red Roja, ${nombre}!</h1>
+          
+          ${email !== emailDestino ? `<p style="color: #666; font-size: 12px;"><em>Nota: Este email está siendo enviado a ${emailDestino} porque Resend requiere verificación de dominio para enviar a otros destinatarios.</em></p>` : ''}
           
           <p>Hola ${nombre} ${apellido},</p>
           
@@ -73,9 +78,12 @@ export async function enviarEmailSolicitudUrgente(
   donantesEmails: string[]
 ) {
   try {
+    // Durante desarrollo, solo enviar a email verificado
+    const emailsDestino = ['francojg13@outlook.com']
+    
     const { data, error } = await resend.emails.send({
       from: 'Red Roja Alertas <onboarding@resend.dev>',
-      to: donantesEmails,
+      to: emailsDestino,
       subject: `🚨 URGENTE: Se necesita sangre tipo ${solicitud.tipo_sangre}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -84,6 +92,8 @@ export async function enviarEmailSolicitudUrgente(
           </div>
           
           <div style="padding: 20px;">
+            <p style="color: #666; font-size: 12px;"><em>Nota: En producción este email se enviaría a ${donantesEmails.length} donantes compatibles.</em></p>
+            
             <h2>Se necesita sangre tipo ${solicitud.tipo_sangre}</h2>
             
             <div style="background-color: #fef2f2; padding: 15px; border-radius: 5px; margin: 20px 0;">
@@ -137,13 +147,18 @@ export async function enviarEmailConfirmacionDonacion(
   }
 ) {
   try {
+    // Solo enviar a email registrado en Resend durante desarrollo
+    const emailDestino = email === 'francojg13@outlook.com' ? email : 'francojg13@outlook.com'
+    
     const { data, error } = await resend.emails.send({
       from: 'Red Roja <onboarding@resend.dev>',
-      to: email,
+      to: emailDestino,
       subject: '✅ Donación Programada Confirmada',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #16a34a;">¡Donación Confirmada! ✅</h1>
+          
+          ${email !== emailDestino ? `<p style="color: #666; font-size: 12px;"><em>Nota: Este email está siendo enviado a ${emailDestino} porque Resend requiere verificación de dominio.</em></p>` : ''}
           
           <p>Hola ${nombre},</p>
           
