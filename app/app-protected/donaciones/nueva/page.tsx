@@ -14,7 +14,7 @@ import { ArrowLeft, AlertCircle, Loader2, Heart, CheckCircle } from 'lucide-reac
 import { puedeDonar, diasHastaPoderDonar } from '@/lib/utils'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
-import { enviarEmailConfirmacionDonacion } from '@/lib/emails'
+import { enviarEmailConfirmacionDonacion } from '@/actions/emails'
 
 interface BancoSangre {
   id: string

@@ -1,10 +1,11 @@
+'use server'
+
 import { Resend } from 'resend'
 
-// Inicializar Resend con la API key
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 /**
- * Email de bienvenida al registrarse
+ * Server Action: Email de bienvenida al registrarse
  */
 export async function enviarEmailBienvenida(
   email: string,
@@ -48,19 +49,19 @@ export async function enviarEmailBienvenida(
 
     if (error) {
       console.error('Error enviando email de bienvenida:', error)
-      return { success: false, error }
+      return { success: false, error: error.message }
     }
 
     console.log('Email de bienvenida enviado:', data)
     return { success: true, data }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error enviando email:', error)
-    return { success: false, error }
+    return { success: false, error: error.message }
   }
 }
 
 /**
- * Email cuando se crea una solicitud urgente
+ * Server Action: Email cuando se crea una solicitud urgente
  */
 export async function enviarEmailSolicitudUrgente(
   solicitud: {
@@ -111,19 +112,19 @@ export async function enviarEmailSolicitudUrgente(
 
     if (error) {
       console.error('Error enviando email de solicitud urgente:', error)
-      return { success: false, error }
+      return { success: false, error: error.message }
     }
 
     console.log('Email de solicitud urgente enviado:', data)
     return { success: true, data }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error enviando email:', error)
-    return { success: false, error }
+    return { success: false, error: error.message }
   }
 }
 
 /**
- * Email de confirmación de donación programada
+ * Server Action: Email de confirmación de donación programada
  */
 export async function enviarEmailConfirmacionDonacion(
   email: string,
@@ -176,13 +177,13 @@ export async function enviarEmailConfirmacionDonacion(
 
     if (error) {
       console.error('Error enviando email de confirmación:', error)
-      return { success: false, error }
+      return { success: false, error: error.message }
     }
 
     console.log('Email de confirmación enviado:', data)
     return { success: true, data }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error enviando email:', error)
-    return { success: false, error }
+    return { success: false, error: error.message }
   }
 }

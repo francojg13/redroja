@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, AlertCircle, Loader2, Droplet } from 'lucide-react'
 import { TIPOS_SANGRE } from '@/lib/constants'
 import Link from 'next/link'
-import { enviarEmailSolicitudUrgente } from '@/lib/emails'
+import { enviarEmailSolicitudUrgente } from '@/actions/emails'
 
 export default function NuevaSolicitudPage() {
   const router = useRouter()
