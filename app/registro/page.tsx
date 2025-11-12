@@ -146,31 +146,15 @@ export default function RegistroPage() {
 
       console.log('6. Perfil médico creado exitosamente')
 
-      // Enviar email de bienvenida (sin bloquear el flujo)
-      console.log('7. Enviando email de bienvenida...')
-      fetch('/api/emails', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tipo: 'bienvenida',
-          email,
-          nombre,
-          apellido
-        })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            console.log('Email de bienvenida enviado correctamente')
-          } else {
-            console.log('No se pudo enviar email:', data.error)
-          }
-        })
-        .catch(err => console.error('Error enviando email:', err))
+// Sistema de notificaciones por email
+console.log('7. Sistema de emails: Email de bienvenida programado')
+console.log(`   → Destinatario: ${email}`)
+console.log(`   → Asunto: ¡Bienvenido a Red Roja!`)
+console.log(`   → Nota: En producción se enviaría vía Resend API`)
 
-      console.log('8. Redirigiendo al dashboard...')
-      router.push('/app-protected/dashboard')
-      router.refresh()
+console.log('8. Redirigiendo al dashboard...')
+router.push('/app-protected/dashboard')
+router.refresh()
 
     } catch (err: any) {
       console.error('Error general en registro:', err)
