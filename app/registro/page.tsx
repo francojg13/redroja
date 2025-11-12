@@ -145,16 +145,11 @@ export default function RegistroPage() {
       }
 
       console.log('6. Perfil médico creado exitosamente')
+      console.log('7. Redirigiendo al dashboard...')
 
-// Sistema de notificaciones por email
-console.log('7. Sistema de emails: Email de bienvenida programado')
-console.log(`   → Destinatario: ${email}`)
-console.log(`   → Asunto: ¡Bienvenido a Red Roja!`)
-console.log(`   → Nota: En producción se enviaría vía Resend API`)
-
-console.log('8. Redirigiendo al dashboard...')
-router.push('/app-protected/dashboard')
-router.refresh()
+      // 4. Redirigir al dashboard
+      router.push('/app-protected/dashboard')
+      router.refresh()
 
     } catch (err: any) {
       console.error('Error general en registro:', err)
