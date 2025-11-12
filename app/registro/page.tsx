@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Droplet, AlertCircle, Loader2 } from 'lucide-react'
 import { TIPOS_SANGRE, PROVINCIAS_TUCUMAN } from '@/lib/constants'
 import { calcularEdad } from '@/lib/utils'
-import { enviarEmailBienvenida } from '@/actions/emails'
 
 export default function RegistroPage() {
   const router = useRouter()
@@ -123,14 +122,6 @@ export default function RegistroPage() {
       console.log('4. Usuario creado en BD:', userData.id)
       console.log('5. Insertando perfil médico...')
 
-      console.log('6. Perfil médico creado exitosamente')
-
-        // NUEVO: Enviar email de bienvenida
-      console.log('7. Enviando email de bienvenida...')
-      await enviarEmailBienvenida(email, nombre, apellido)
-        .catch(err => console.error('Error enviando email:', err))
-      console.log('8. Redirigiendo al dashboard...')
-
       // 3. Crear perfil médico
       const factorRh = tipoSangre.includes('+') ? 'positivo' : 'negativo'
       
@@ -147,30 +138,39 @@ export default function RegistroPage() {
         })
 
       if (perfilError) {
-  console.error('Error al crear perfil médico:', perfilError)
-  setError(`Error al crear perfil médico: ${perfilError.message}`)
-  setLoading(false)
-  return
-}
+        console.error('Error al crear perfil médico:', perfilError)
+        setError(`Error al crear perfil médico: ${perfilError.message}`)
+        setLoading(false)
+        return
+      }
 
-console.log('6. Perfil médico creado exitosamente')
+      console.log('6. Perfil médico creado exitosamente')
 
-// Enviar email de bienvenida (sin await para no bloquear)
-enviarEmailBienvenida(email, nombre, apellido)
-  .then(result => {
-    if (result.success) {
-      console.log('Email de bienvenida enviado correctamente')
-    } else {
-      console.log('No se pudo enviar el email:', result.message)
-    }
-  })
-  .catch(err => {
-    console.error('Error enviando email:', err)
-  })
+      // Enviar email de bienvenida (sin bloquear el flujo)
+      console.log('7. Enviando email de bienvenida...')
+      fetch('/api/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo: 'bienvenida',
+          email,
+          nombre,
+          apellido
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Email de bienvenida enviado correctamente')
+          } else {
+            console.log('No se pudo enviar email:', data.error)
+          }
+        })
+        .catch(err => console.error('Error enviando email:', err))
 
-console.log('7. Redirigiendo al dashboard...')
-router.push('/app-protected/dashboard')
-router.refresh()
+      console.log('8. Redirigiendo al dashboard...')
+      router.push('/app-protected/dashboard')
+      router.refresh()
 
     } catch (err: any) {
       console.error('Error general en registro:', err)
